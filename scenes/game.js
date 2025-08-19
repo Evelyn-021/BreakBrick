@@ -31,18 +31,10 @@ export default class BrickBouncer extends Phaser.Scene {
     // Pelota roja
     this.pelota = this.add.circle(600, 500, 35, 0xff0000).setStrokeStyle(5, 0xffffff);
 
+    // Raqueta negra
     this.raqueta = this.add.rectangle(this.cameras.main.centerX, 950, 300, 50, 0x000000).setStrokeStyle(5, 0xffffff);
 
-    // Bloque azul
-    this.bloque = this.add.rectangle(
-      Phaser.Math.Between(this.margenObstaculoX, 1720 - this.margenObstaculoX),
-      Phaser.Math.Between(100, 400),
-      300,
-      50,
-      0x0000ff
-    );
-
-    [this.pelota, this.raqueta, this.bloque].forEach(obj => this.physics.add.existing(obj));
+    [this.pelota, this.raqueta].forEach(obj => this.physics.add.existing(obj));
 
     this.physics.world.setBoundsCollision(true, true, true, false);
 
@@ -51,11 +43,35 @@ export default class BrickBouncer extends Phaser.Scene {
       .setCollideWorldBounds(true);
 
     this.raqueta.body.setImmovable(true);
-    this.bloque.body.setImmovable(true);
     this.raqueta.body.setCollideWorldBounds(true);
 
     this.physics.add.collider(this.pelota, this.raqueta, this.rebotePelota.bind(this));
-    this.physics.add.collider(this.pelota, this.bloque, this.impactoBloque.bind(this));
+
+    // Crear rejilla de bloques tipo ladrillos
+    this.bloques = [];
+    const filas = 4;        // cantidad de filas
+    const columnas = 7;     // cantidad de columnas
+    const anchoBloque = 200;
+    const altoBloque = 50;
+    const separacion = 10;  // espacio entre bloques
+    const offsetX = 100;    // margen desde la izquierda
+    const offsetY = 100;    // margen desde arriba
+
+    for (let fila = 0; fila < filas; fila++) {
+      for (let col = 0; col < columnas; col++) {
+        const x = offsetX + col * (anchoBloque + separacion) + anchoBloque / 2;
+        const y = offsetY + fila * (altoBloque + separacion) + altoBloque / 2;
+
+        const bloque = this.add.rectangle(x, y, anchoBloque, altoBloque, 0x0000ff);
+        this.physics.add.existing(bloque);
+        bloque.body.setImmovable(true);
+        this.bloques.push(bloque);
+
+        this.physics.add.collider(this.pelota, bloque, () => {
+          bloque.destroy(); // Destruye el bloque al golpearlo
+        });
+      }
+    }
 
     this.teclaLanzar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
   }
@@ -118,10 +134,5 @@ export default class BrickBouncer extends Phaser.Scene {
     const velX = (direccionX / magnitud) * this.velocidadPelota;
     const velY = (-1 / magnitud) * this.velocidadPelota;
     this.pelota.body.setVelocity(velX, velY);
-  }
-
-  impactoBloque() {
-    this.bloque.x = Phaser.Math.Between(this.margenObstaculoX, 1720 - this.margenObstaculoX);
-    this.bloque.y = Phaser.Math.Between(100, 400);
   }
 }
