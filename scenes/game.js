@@ -20,7 +20,7 @@ export default class BrickBouncer extends Phaser.Scene {
   }
 
   create() {
-    this.instrucciones = this.add.text(this.cameras.main.centerX, 1030, "Usá A/D o flechas. Espacio para lanzar", {
+    this.instrucciones = this.add.text(this.cameras.main.centerX, 1030, "Usar flechas o A/D para moverte y Espacio para lanzar", {
       fontSize: "50px",
       fill: "#fff",
       fontStyle: "bold",
