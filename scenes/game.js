@@ -28,14 +28,18 @@ export default class BrickBouncer extends Phaser.Scene {
       strokeThickness: 8,
     }).setOrigin(0.5);
 
-    this.pelota = this.add.circle(600, 500, 35, 0x000000).setStrokeStyle(5, 0xffffff);
+    // Pelota roja
+    this.pelota = this.add.circle(600, 500, 35, 0xff0000).setStrokeStyle(5, 0xffffff);
+
     this.raqueta = this.add.rectangle(this.cameras.main.centerX, 950, 300, 50, 0x000000).setStrokeStyle(5, 0xffffff);
+
+    // Bloque azul
     this.bloque = this.add.rectangle(
       Phaser.Math.Between(this.margenObstaculoX, 1720 - this.margenObstaculoX),
       Phaser.Math.Between(100, 400),
       300,
       50,
-      0xffffff
+      0x0000ff
     );
 
     [this.pelota, this.raqueta, this.bloque].forEach(obj => this.physics.add.existing(obj));
